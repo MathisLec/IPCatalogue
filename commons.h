@@ -1,14 +1,11 @@
-enum type { PUBLIC, PRIVATE, LOOPBACK };
+#ifndef COMMONS_H
+#define COMMONS_H
 
-typedef struct IP{
-    char* ip_dec;
-    char* mask_dec;
-    
-    char* ip_binary;
-    char* mask_binary;
+#include <stdio.h>
+#include <stdlib.h>
 
-    char* ip_hex;
-    char* mask_hex;
+char* binaryToDec(char* bin);
 
-    type type;
-} IP;
+char* binaryToHex(char* bin);
+
+#endif
