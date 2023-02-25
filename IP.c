@@ -22,19 +22,22 @@ IP getIPObject(char* ip){
     IP ipObj = malloc(sizeof(struct IP));
     //Field allocation
     //Decimal IP
+    int numCharDecFormat = 16; // 16 = 3 bits * 4 + 3 dots + nullbyte
+    //decimal IP allocated by strdup
     //Decimal Mask
-    int numCharDecMask = 16; // 16 = 3 bits * 4 + 3 dots + nullbyte
-    ipObj->mask_dec = malloc(sizeof(char) * numCharDecMask);
+    ipObj->mask_dec = malloc(sizeof(char) * numCharDecFormat);
 
     //Binary IP
+    int numCharBinFormat = 36; // 36 = 8 bits * 4 + 3 dots + nullbyte
+    ipObj->ip_binary = malloc(sizeof(char) * numCharBinFormat);
     //Binary Mask
-    int numCharBinaryMask = 36; // 36 = 8 bits * 4 + 3 dots + nullbyte
-    ipObj->mask_binary = malloc(sizeof(char) * numCharBinaryMask);
+    ipObj->mask_binary = malloc(sizeof(char) * numCharBinFormat);
 
     //Hexa IP
+    int numCharHexFormat = 12; // 12 = 2 bits * 4 + 3 dots + nullbyte
+    ipObj->ip_hex = malloc(sizeof(char) * numCharHexFormat);
     //Hexa Mask
-    int numCharHexMask = 12; // 12 = 2 bits * 4 + 3 dots + nullbyte
-    ipObj->mask_hex = malloc(sizeof(char) * numCharHexMask);
+    ipObj->mask_hex = malloc(sizeof(char) * numCharHexFormat);
 
     //To perform modifications on string
     char* ip_copy = strdup(ip);
@@ -43,20 +46,18 @@ IP getIPObject(char* ip){
     char* token = strtok(ip_copy,DELIMITER_MSK);
     //Set ip_dec to ipObj with a copy of the content
     ipObj->ip_dec = strdup(token);
-    printf("%s\n",ipObj->ip_dec);
     //Get mask
     token = strtok(NULL,DELIMITER_MSK);
     //Convert mask number into its binary representation
-    numberToBinaryMask(strdup(token),ipObj->mask_binary,numCharBinaryMask);
-    printf("Masque binaire: %s\n",ipObj->mask_binary);
-
+    numberToBinaryMask(strdup(token),ipObj->mask_binary,numCharBinFormat);
+    {
     //convert each doted-parts from binary to dec and hex
     char* binary_cpy = strdup(ipObj->mask_binary);
     token = strtok(binary_cpy,DELIMITER_IP);
     int nbDots = 0;
     while ( token != NULL ) {
-        char* dec = binaryToDec(token);
-        char* hex = binaryToHex(token);
+        char* dec = binaryStrToDecStr(token);
+        char* hex = binaryStrToHexStr(token);
         
         strcat(ipObj->mask_dec,dec);
         strcat(ipObj->mask_hex,hex);
@@ -70,14 +71,34 @@ IP getIPObject(char* ip){
         nbDots++;
         token = strtok ( NULL, DELIMITER_IP );
     }
-    printf("Masque decimal: %s\n",ipObj->mask_dec);
-    printf("Masque hex: %s\n",ipObj->mask_hex);
     free(binary_cpy);
+    }
+    {
+    //IP part
+    //convert each doted-parts from binary to dec and hex
+    char* dec_cpy = strdup(ipObj->ip_dec);
+    token = strtok(dec_cpy,DELIMITER_IP);
+    int nbDots = 0;
+    while ( token != NULL ) {
+        char* bin = decimalStrToBinaryStr(token);
+        char* hex = decimalStrToHexStr(token);
+        
+        strcat(ipObj->ip_binary,bin);
+        strcat(ipObj->ip_hex,hex);
+
+        free(bin);
+        free(hex);
+        if(nbDots<3){
+            strcat(ipObj->ip_binary,DELIMITER_IP);
+            strcat(ipObj->ip_hex,DELIMITER_IP);
+        }
+        nbDots++;
+        token = strtok ( NULL, DELIMITER_IP );
+    }
+    free(dec_cpy);
+    }
+   
     //Stubs
-    ipObj->ip_binary = NULL;
-
-    ipObj->ip_hex = NULL;
-
     ipObj->type = PUBLIC;
 
     return ipObj;
@@ -86,9 +107,9 @@ IP getIPObject(char* ip){
 void freeIpObject(IP ip){
     free(ip->ip_dec);
     free(ip->mask_dec);
-    //free(ip->ip_binary);
+    free(ip->ip_binary);
     free(ip->mask_binary);
-    //free(ip->ip_hex);
+    free(ip->ip_hex);
     free(ip->mask_hex);
     free(ip);
 }

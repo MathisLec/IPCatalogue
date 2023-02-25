@@ -1,14 +1,45 @@
 #include "commons.h"
 #include <string.h>
 
-char* binaryToDec(char* bin){
+char* decimalIntToBinaryStr(int num) {
+    int byteSize = 8;
+    char* finalString = malloc(sizeof(char)*byteSize+1);// adress part on 8 bits + nullbyte
+    for(int i=7;i>=0;i--){
+        if(num>0){
+            finalString[i] = num%2==0 ? '0' : '1';
+            num/=2;
+        }
+        else
+            finalString[i] = '0';
+    }
+    return finalString;
+}
+
+char* decimalStrToBinaryStr(char* num) {
+    int val = atoi(num);
+    return decimalIntToBinaryStr(val);
+}
+
+char* decimalIntToHexStr(int num) {
+    char* bin = decimalIntToBinaryStr(num);
+    char* hex = binaryStrToHexStr(bin);
+    free(bin);
+    return hex;
+}
+
+char* decimalStrToHexStr(char* num) {
+    int val = atoi(num);
+    return decimalIntToHexStr(val);
+}
+
+char* binaryStrToDecStr(char* bin){
     int dec = (int) strtol(bin,NULL,2);
     char* strDec = malloc(sizeof(char)*4);
     sprintf(strDec,"%d",dec);
     return strDec;
 }
 
-char* binaryToHex(char* bin){
+char* binaryStrToHexStr(char* bin){ //bynary byte string to hex
     // FIRST SEMI-BYTE
     char firstPart[5];
     strncpy(firstPart,bin,4);

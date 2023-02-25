@@ -4,8 +4,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-char* binaryToDec(char* bin);
+char* binaryStrToDecStr(char* bin);
 
-char* binaryToHex(char* bin);
+char* binaryStrToHexStr(char* bin);
+
+char* decimalIntToBinaryStr(int num);
+
+char* decimalStrToBinaryStr(char* num);
+
+char* decimalIntToHexStr(int num);
+
+char* decimalStrToHexStr(char* num);
 
 #endif
