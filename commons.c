@@ -1,6 +1,11 @@
 #include "commons.h"
 #include <string.h>
 
+/**
+ * char* decimalIntToBinaryStr(int num)
+ * num: decimal integer to convert
+ * return: binary representation in string format
+*/
 char* decimalIntToBinaryStr(int num) {
     int byteSize = 8;
     char* finalString = malloc(sizeof(char)*byteSize+1);// adress part on 8 bits + nullbyte
@@ -15,11 +20,21 @@ char* decimalIntToBinaryStr(int num) {
     return finalString;
 }
 
+/**
+ * char* decimalStrToBinaryStr(char* num)
+ * num: decimal string representation to convert
+ * return: binary representation in string format
+*/
 char* decimalStrToBinaryStr(char* num) {
     int val = atoi(num);
     return decimalIntToBinaryStr(val);
 }
 
+/**
+ * char* decimalIntToHexStr(int num)
+ * num: decimal integer to convert
+ * return: hexa representation in string format
+*/
 char* decimalIntToHexStr(int num) {
     char* bin = decimalIntToBinaryStr(num);
     char* hex = binaryStrToHexStr(bin);
@@ -27,11 +42,21 @@ char* decimalIntToHexStr(int num) {
     return hex;
 }
 
+/**
+ * char* decimalStrToHexStr(char* num)
+ * num: decimal string representation to convert
+ * return: hexa representation in string format
+*/
 char* decimalStrToHexStr(char* num) {
     int val = atoi(num);
     return decimalIntToHexStr(val);
 }
 
+/**
+ * char* binaryStrToDecStr(char* num)
+ * num: decimal string representation to convert
+ * return: hexa representation in string format
+*/
 char* binaryStrToDecStr(char* bin){
     int dec = (int) strtol(bin,NULL,2);
     char* strDec = malloc(sizeof(char)*4);

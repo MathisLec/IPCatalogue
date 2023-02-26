@@ -1,7 +1,7 @@
 #ifndef IP_H
 #define IP_H
 
-typedef enum { PUBLIC, PRIVATE, LOOPBACK } type;
+typedef enum { PUBLIC, PRIVATE, LOOPBACK, NETWORK, BROADCAST } type;
 
 typedef struct IP{
     char* ip_dec;
@@ -19,5 +19,9 @@ typedef struct IP{
 IP getIPObject(char* ip);
 
 void freeIpObject(IP ip);
+
+void printIPObj(IP ip);
+
+char* getStrType(type t);
 
 #endif

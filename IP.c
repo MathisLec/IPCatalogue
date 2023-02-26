@@ -4,8 +4,15 @@
 
 const char* DELIMITER_IP = ".";
 const char* DELIMITER_MSK = "/";
+char* type_str[5] = {"PUBLIC", "PRIVATE", "LOOPBACK", "NETWORK", "BROADCAST"};
 
-void numberToBinaryMask(char* maskNumber,char* mask_binary, int numCharBinaryMask){
+/**
+ * numberToBinaryMask(char* maskNumber,char* mask_binary)
+ * maskNumber: mask number in string format
+ * mask_binary: receive binary representation in string format
+*/
+void numberToBinaryMask(char* maskNumber,char* mask_binary){
+    int numCharBinaryMask = 36;
     int number = atoi(maskNumber);
     for(int i=1;i<numCharBinaryMask;i++){
         if(i%9==0){
@@ -18,27 +25,98 @@ void numberToBinaryMask(char* maskNumber,char* mask_binary, int numCharBinaryMas
     }
 }
 
-IP getIPObject(char* ip){
+/**
+ * void printIPObj(IP ip)
+ * ip: the ip object to print
+*/
+void printIPObj(IP ip){
+    printf("\n---------- IP ----------\n");
+    printf("Decimal----------\n");
+    printf("IP: %s\n",ip->ip_dec);
+    printf("Masque: %s\n",ip->mask_dec);
+    printf("Hexa----------\n");
+    printf("IP: %s\n",ip->ip_hex);
+    printf("Masque: %s\n",ip->mask_hex);
+    printf("Binary----------\n");
+    printf("IP: %s\n",ip->ip_binary);
+    printf("Masque: %s\n",ip->mask_binary);
+    printf("\n");
+}
+
+/**
+ * void convertAndFormatAdress(char* toConvert,
+ *                              char* firstFormat, char* secondFormat,
+ *                              char* (*firstConversionFunction)(char*),char* (*secondConversionFunction)(char*))
+ * toConvert: string to convert
+ * firstFormat: reveive the first format representation
+ * secondFormat: reveive the second format representation
+ * firstConversionFunction: pointer of the first conversion function
+ * secondConversionFunction: pointer of the second conversion function
+*/
+void convertAndFormatAdress(char* toConvert, 
+                            char* firstFormat, 
+                            char* secondFormat,
+                            char* (*firstConversionFunction)(char*),
+                            char* (*secondConversionFunction)(char*)){
+    //convert each doted-parts from toConvert to firstFormat and secondFormat
+    char* toConvert_cpy = strdup(toConvert);
+    char* token = strtok(toConvert_cpy,DELIMITER_IP);
+    int nbDots = 0;
+    while ( token != NULL ) {
+        //Use conversion functions
+        char* firstConversion = firstConversionFunction(token);
+        char* secondConversion = secondConversionFunction(token);
+        //Concat parts after parts
+        strcat(firstFormat,firstConversion);
+        strcat(secondFormat,secondConversion);
+        // clean to mitigate memory leaks
+        free(firstConversion);
+        free(secondConversion);
+        //Add point delimiter
+        if(nbDots<3){
+            strcat(firstFormat,DELIMITER_IP);
+            strcat(secondFormat,DELIMITER_IP);
+        }
+        nbDots++;
+        token = strtok ( NULL, DELIMITER_IP );
+    }
+    free(toConvert_cpy);
+}
+
+/**
+ * IP ipObjAllocation()
+ * return: IP object well allocated, except ip_dec field which is allocated just after by strdup
+*/
+IP ipObjAllocation(){
     IP ipObj = malloc(sizeof(struct IP));
     //Field allocation
     //Decimal IP
     int numCharDecFormat = 16; // 16 = 3 bits * 4 + 3 dots + nullbyte
     //decimal IP allocated by strdup
     //Decimal Mask
-    ipObj->mask_dec = malloc(sizeof(char) * numCharDecFormat);
+    ipObj->mask_dec = calloc(numCharDecFormat, sizeof(char));
 
     //Binary IP
     int numCharBinFormat = 36; // 36 = 8 bits * 4 + 3 dots + nullbyte
-    ipObj->ip_binary = malloc(sizeof(char) * numCharBinFormat);
+    ipObj->ip_binary = calloc(numCharBinFormat, sizeof(char));
     //Binary Mask
-    ipObj->mask_binary = malloc(sizeof(char) * numCharBinFormat);
+    ipObj->mask_binary = calloc(numCharBinFormat, sizeof(char));
 
     //Hexa IP
     int numCharHexFormat = 12; // 12 = 2 bits * 4 + 3 dots + nullbyte
-    ipObj->ip_hex = malloc(sizeof(char) * numCharHexFormat);
+    ipObj->ip_hex = calloc(numCharHexFormat, sizeof(char));
     //Hexa Mask
-    ipObj->mask_hex = malloc(sizeof(char) * numCharHexFormat);
+    ipObj->mask_hex = calloc(numCharHexFormat, sizeof(char));
+    return ipObj;
+}
 
+/**
+ * IP getIPObject(char* ip)
+ * ip: ip string representation "xxx.xxx.xxx.xxx/yy"
+ * return: IP object from string representation
+*/
+IP getIPObject(char* ip){
+    IP ipObj = ipObjAllocation();
     //To perform modifications on string
     char* ip_copy = strdup(ip);
     //Get two parts of the ip (ip/mask)
@@ -48,62 +126,26 @@ IP getIPObject(char* ip){
     ipObj->ip_dec = strdup(token);
     //Get mask
     token = strtok(NULL,DELIMITER_MSK);
+
     //Convert mask number into its binary representation
-    numberToBinaryMask(strdup(token),ipObj->mask_binary,numCharBinFormat);
-    {
-    //convert each doted-parts from binary to dec and hex
-    char* binary_cpy = strdup(ipObj->mask_binary);
-    token = strtok(binary_cpy,DELIMITER_IP);
-    int nbDots = 0;
-    while ( token != NULL ) {
-        char* dec = binaryStrToDecStr(token);
-        char* hex = binaryStrToHexStr(token);
-        
-        strcat(ipObj->mask_dec,dec);
-        strcat(ipObj->mask_hex,hex);
+    numberToBinaryMask(strdup(token),ipObj->mask_binary);
 
-        free(dec);
-        free(hex);
-        if(nbDots<3){
-            strcat(ipObj->mask_dec,DELIMITER_IP);
-            strcat(ipObj->mask_hex,DELIMITER_IP);
-        }
-        nbDots++;
-        token = strtok ( NULL, DELIMITER_IP );
-    }
-    free(binary_cpy);
-    }
-    {
-    //IP part
-    //convert each doted-parts from binary to dec and hex
-    char* dec_cpy = strdup(ipObj->ip_dec);
-    token = strtok(dec_cpy,DELIMITER_IP);
-    int nbDots = 0;
-    while ( token != NULL ) {
-        char* bin = decimalStrToBinaryStr(token);
-        char* hex = decimalStrToHexStr(token);
-        
-        strcat(ipObj->ip_binary,bin);
-        strcat(ipObj->ip_hex,hex);
-
-        free(bin);
-        free(hex);
-        if(nbDots<3){
-            strcat(ipObj->ip_binary,DELIMITER_IP);
-            strcat(ipObj->ip_hex,DELIMITER_IP);
-        }
-        nbDots++;
-        token = strtok ( NULL, DELIMITER_IP );
-    }
-    free(dec_cpy);
-    }
+    //Convert from decimal IP to binary and hexa IP
+    convertAndFormatAdress(ipObj->ip_dec,ipObj->ip_binary,ipObj->ip_hex,decimalStrToBinaryStr,decimalStrToHexStr);
    
+    //Convert from binary mask to decimal and hexa mask
+    convertAndFormatAdress(ipObj->mask_binary,ipObj->mask_dec,ipObj->mask_hex,binaryStrToDecStr,binaryStrToHexStr);
+
     //Stubs
     ipObj->type = PUBLIC;
 
     return ipObj;
 }
 
+/**
+ * void freeIpObject(IP ip)
+ * ip: the ip object to free
+*/
 void freeIpObject(IP ip){
     free(ip->ip_dec);
     free(ip->mask_dec);
@@ -112,4 +154,8 @@ void freeIpObject(IP ip){
     free(ip->ip_hex);
     free(ip->mask_hex);
     free(ip);
+}
+
+char* getStrType(type t){
+    return type_str[t];
 }
