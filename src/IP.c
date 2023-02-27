@@ -155,6 +155,11 @@ void freeIpObject(IP ip){
     free(ip);
 }
 
+/**
+ * char* getStrType(type t)
+ * t: the type to return as string
+ * return: the type in string representation
+*/
 char* getStrType(type t){
     return TYPE_STR[t];
 }

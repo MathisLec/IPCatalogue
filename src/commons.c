@@ -64,7 +64,12 @@ char* binaryStrToDecStr(char* bin){
     return strDec;
 }
 
-char* binaryStrToHexStr(char* bin){ //bynary byte string to hex
+/**
+ * char* binaryStrToHexStr(char* bin)
+ * bin: binary string representation to convert
+ * return: hexa representation in string format
+*/
+char* binaryStrToHexStr(char* bin){
     // FIRST SEMI-BYTE
     char firstPart[5];
     strncpy(firstPart,bin,4);
