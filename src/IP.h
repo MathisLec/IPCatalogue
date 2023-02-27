@@ -1,6 +1,8 @@
 #ifndef IP_H
 #define IP_H
 
+#include "commons.h"
+
 typedef enum { PUBLIC, PRIVATE, LOOPBACK, NETWORK, BROADCAST } type;
 
 typedef struct IP{

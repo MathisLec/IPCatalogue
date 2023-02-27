@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "IP.h"
 
 int IP_NUM = 3;

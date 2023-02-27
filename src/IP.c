@@ -1,10 +1,9 @@
 #include <string.h>
-#include "commons.h"
 #include "IP.h"
 
 const char* DELIMITER_IP = ".";
 const char* DELIMITER_MSK = "/";
-char* type_str[5] = {"PUBLIC", "PRIVATE", "LOOPBACK", "NETWORK", "BROADCAST"};
+char* TYPE_STR[5] = {"PUBLIC", "PRIVATE", "LOOPBACK", "NETWORK", "BROADCAST"};
 
 /**
  * numberToBinaryMask(char* maskNumber,char* mask_binary)
@@ -157,5 +156,5 @@ void freeIpObject(IP ip){
 }
 
 char* getStrType(type t){
-    return type_str[t];
+    return TYPE_STR[t];
 }
