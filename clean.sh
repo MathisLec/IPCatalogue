@@ -1,0 +1,1 @@
+rm -rf ip_catalog build/
