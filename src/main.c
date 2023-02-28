@@ -22,6 +22,22 @@ char* formatStrLineFromIp(IP i){
 
 }
 
+IP* addIPInArray(IP* ips, char* ip){
+    IP_NUM++;
+    ips = realloc(ips, sizeof(IP) * IP_NUM);
+    ips[IP_NUM-1] = getIPObject(ip);
+    return ips;
+}
+
+IP* addIpMenu(IP* ips){
+    char* buff = calloc(20, sizeof(char));
+    printf("Votre IP à ajouter (Ex:192.168.0.1/24):\n");
+    scanf("%s",buff);
+    ips = addIPInArray(ips,buff);
+    free(buff);
+    return ips;
+}
+
 void printMenu(IP* IPs){
     printf("Bienvenue dans IPCatalogue\n\n");
     printf(" ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- \n");
@@ -56,7 +72,7 @@ int main(){
 
         switch(choice){
             case 1:
-                printf("Hello\n");
+                IPs = addIpMenu(IPs);
                 break;
             case 2:
                 printf("Hello\n");
