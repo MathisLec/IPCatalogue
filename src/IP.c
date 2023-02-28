@@ -125,9 +125,18 @@ IP getIPObject(char* ip){
     ipObj->ip_dec = strdup(token);
     //Get mask
     token = strtok(NULL,DELIMITER_MSK);
+    char* mask_tok = strdup(token);
+
+    //Quit if mask too large
+    if(atoi(mask_tok)>32){
+        free(mask_tok);
+        printf("Bad mask\n");
+        exit(EXIT_FAILURE);
+    }
 
     //Convert mask number into its binary representation
-    numberToBinaryMask(strdup(token),ipObj->mask_binary);
+    numberToBinaryMask(mask_tok,ipObj->mask_binary);
+    free(mask_tok);
 
     //Convert from decimal IP to binary and hexa IP
     convertAndFormatAdress(ipObj->ip_dec,ipObj->ip_binary,ipObj->ip_hex,decimalStrToBinaryStr,decimalStrToHexStr);

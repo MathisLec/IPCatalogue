@@ -50,3 +50,5 @@ In order to have an easy way to treat IP addresses, we have implemented a struct
 To facilitate the development of the application, a function in IP.c produce an IP object from an IP string representation that must follow this typo: "xxx.xxx.xxx.xxx/yy" which "x" fields are the number of doted part and "y" the mask in number representation.
 
 The details of the functions are mentionned as a "JavaDoc" style documentation in the files.
+
+There are not a complete error management, so you could encounter some bugs but in the traditional way to use our tool, it could be ok.
