@@ -4,12 +4,12 @@
 #include <arpa/inet.h>
 
 
-float mask;
 
-printf("Entrez le masque pour filtrez les adresses IP")
-scanf("%f", &mask);
+void filter_ip(char* filename,) {
+    float mask;
 
-void filter_ip(char* filename, float* mask) {
+    scanf("%f", &mask);
+
     FILE *fp;
     char line[100];
     fp = fopen(filename, "r");
