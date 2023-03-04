@@ -26,7 +26,7 @@ To use it, please launch install.sh script, then:
 ```
 ./ip_catalog
 ```
-You can choose among 3 options;
+You can choose among 3 options:
 1. Rentrer une IP: add an IP in the catalog. The typo is for example: 192.168.0.1/24
 2. Filtrer les IP par masque: show you only IP that match with the mask you specified.
 3. Quitter: Quit the application. Please, use this option instead of Ctrl-C to keep your memory.
@@ -44,7 +44,7 @@ in src directory, you can find:
 - main.c: the file which contain the main function and manages the command-line interface.
 
 ## Functioning
-
+### Structure
 In order to have an easy way to treat IP addresses, we have implemented a structure IP that contain the IP address in different formats (decimal, binary and hexadecimal), in string representation, and the "type" of the address. It is located in IP.h. you can also find the "type" enumeration that define which value an IP type can get.
 
 To facilitate the development of the application, a function in IP.c produce an IP object from an IP string representation that must follow this typo: "xxx.xxx.xxx.xxx/yy" which "x" fields are the number of doted part and "y" the mask in number representation.
