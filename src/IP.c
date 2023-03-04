@@ -230,6 +230,8 @@ type addressToType(IP ip){
         addressType = BROADCAST;
     else if(isIpPublic(ip))
         addressType = PUBLIC;
+    else if(strcmp(ip->ip_dec,"127.0.0.1") == 0 && strcmp(ip->mask_dec,"255.0.0.0") == 0)
+        addressType = LOOPBACK;
     else
         addressType = PRIVATE;
     return addressType;
