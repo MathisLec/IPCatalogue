@@ -50,13 +50,17 @@ In order to have an easy way to treat IP addresses, we have implemented a struct
 To facilitate the development of the application, a function in IP.c produce an IP object from an IP string representation that must follow this typo: "xxx.xxx.xxx.xxx/yy" which "x" fields are the number of doted part and "y" the mask in number representation.
 
 The details of the functions are mentionned as a "JavaDoc" style documentation in the files.
-
+### Import/Save
 We integrate a save system to import and export IPs from a file. The saved IPs are stored in "save.csv" file in the root directory of the executable. We chose the CSV format in order if the user wants to re-use it. The first line of the file is the number of IP in the file. From the second line to the EOF, we have all IPs in "xxx.xxx.xxx.xxx/yy" format separated with '\n' character. We have managed main I/O errors with the file in the code.
 
+### Add address
 When the user type '1', the prompt indicate that the user must enter an IP. When done, the save file is refreshed to include the new IP.
 
+### IP Filtering
 The filtering is performed when user type '2' in the prompt and when he type a mask to filter with. The filtering don't save data by default to let the choice to the user to save that filtering or not. The user must save by himself by typing '3' in the prompt. The filtering is performed by comparing the binary representation of the mask bit to bit.
 
-There are not a complete error management, so you could encounter some bugs but in the traditional way to use our tool, it could be ok. For example when the prompt ask you to enter an IP like "192.168.0.1/24", please don't try to enter "192.168.0.1/11111111.11111111.11111111.00000000", it will crash the program.
-
+### Address type determination
 The "type" of the IP is fixed first if it is a network, broadcast or loopback address, then, if it is a public or private address. We based our IP type determination on this document: https://phoenixnap.com/kb/public-vs-private-ip-address. This document regroup main ranges attributed to public IP in the "Public IP Ranges" section. If the IP is not between those ranges, it is considered as private.
+
+### Disclamer
+There are not a complete error management, so you could encounter some bugs but in the traditional way to use our tool, it could be ok. For example when the prompt ask you to enter an IP like "192.168.0.1/24", please don't try to enter "192.168.0.1/11111111.11111111.11111111.00000000", it will crash the program.
