@@ -24,6 +24,17 @@ void numberToBinaryMask(char* maskNumber,char* mask_binary){
     }
 }
 
+int binaryMaskToNumber(char* binaryMask){
+    int cmp = 0;
+    int index = 0;
+    while(binaryMask[index] != '0' && binaryMask[index] != '\0' ){
+        if(binaryMask[index] != '.')
+            cmp++;
+        index++;
+    }
+    return cmp;
+}
+
 /**
  * void printIPObj(IP ip)
  * ip: the ip object to print
@@ -80,6 +91,17 @@ void convertAndFormatAdress(char* toConvert,
         token = strtok ( NULL, DELIMITER_IP );
     }
     free(toConvert_cpy);
+}
+
+char* formatIPToSaveFormat(IP ip){
+    char* finalStr = calloc(16,sizeof(char));
+    strcat(finalStr, ip->ip_dec);
+    strcat(finalStr, "/");
+    char nbIPStr[2] = "";
+    sprintf(nbIPStr, "%d", binaryMaskToNumber(ip->mask_binary));
+    strcat(finalStr, nbIPStr);
+    strcat(finalStr, "\n\0");
+    return finalStr;
 }
 
 /**

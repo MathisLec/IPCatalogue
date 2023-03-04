@@ -4,11 +4,41 @@ int IP_NUM = 3;
 int IP_LENGTH = 15;
 
 IP* importData(){
-    IP* IP = malloc(sizeof(IP) * IP_NUM);
-    for(int i = 0;i<IP_NUM;i++){
-        IP[i] = getIPObject("192.168.0.1/24");
+    // 1.Ouverture du fichier
+    // 2.Lecture du fichier
+    // 3.Allocation mémoire (tableau d'IP)
+    // 4.Remplir le tableau avec des IP
+    // 5.Retourner le tableau
+    char chaine[20] = "";
+    FILE* myFile = fopen("save.txt","r");
+    fgets(chaine,20,myFile);
+
+    int taille_chaine = atoi(chaine);
+    IP_NUM = taille_chaine;
+    IP* IPList = malloc(sizeof(IP) * taille_chaine);
+    for(int i=0;i<taille_chaine;i++){
+        fgets(chaine,20,myFile);
+        IPList[i] = getIPObject(chaine);
+        printIPObj(IPList[i]);
     }
-    return IP;
+    fclose(myFile);
+    return IPList;
+}
+
+void saveData(IP* IPs){
+    // 1.Ouverture du fichier
+    // 2.Ecriture du fichier
+    // 3.Allocation mémoire (chaine formatée d'une adresse ip)
+    FILE* myFile = fopen("save.txt","w");
+    char nbIPStr[11] = "";
+    sprintf(nbIPStr, "%d\n", IP_NUM);
+    fputs(nbIPStr, myFile);
+    for(int i=0;i<IP_NUM;i++){
+        char* ipFormated = formatIPToSaveFormat(IPs[i]);
+        fputs(ipFormated, myFile);
+        free(ipFormated);
+    }
+    fclose(myFile);
 }
 
 void clean(IP* IP){
@@ -73,6 +103,7 @@ int main(){
         switch(choice){
             case 1:
                 IPs = addIpMenu(IPs);
+                saveData(IPs);
                 break;
             case 2:
                 printf("Hello\n");

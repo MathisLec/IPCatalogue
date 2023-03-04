@@ -26,4 +26,6 @@ void printIPObj(IP ip);
 
 char* getStrType(type t);
 
+char* formatIPToSaveFormat(IP ip);
+
 #endif
