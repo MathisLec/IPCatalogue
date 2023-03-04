@@ -90,10 +90,13 @@ IP* addIpMenu(IP* ips){
 }
 
 void ipFilter(IP* ips, int mask){
+    //If a filter is already set
     if(FILTERED_IPS != NULL)
         free(FILTERED_IPS);
+    //Get binary mask
     char* binMask = numberIntToBinaryMask(mask);
     int nbFilteredIP = 0;
+    //Add matching IP in the list
     for(int i=0;i<IP_NUM;i++){
         if(strcmp(ips[i]->mask_binary,binMask) == 0){
             nbFilteredIP++;

@@ -64,6 +64,11 @@ char* binaryStrToDecStr(char* bin){
     return strDec;
 }
 
+/**
+ * unsigned long binaryStrToDecULong(char* bin)
+ * bin: the binary string to convert
+ * return: the number in unsigned long format
+*/
 unsigned long binaryStrToDecULong(char* bin){
     return strtoul(bin,NULL,2);
 }
