@@ -39,6 +39,11 @@ char* numberIntToBinaryMask(int mask){
     return binMask;
 }
 
+/**
+ * int binaryMaskToNumber(char* binaryMask)
+ * binaryMask: the binary representation in string format
+ * return: the mask in number format
+*/
 int binaryMaskToNumber(char* binaryMask){
     int cmp = 0;
     int index = 0;
@@ -108,35 +113,36 @@ void convertAndFormatAdress(char* toConvert,
     free(toConvert_cpy);
 }
 
+/**
+ * char* formatIPToSaveFormat(IP ip) 
+ * ip: the ip to format
+ * return: the ip formated in string format
+*/
 char* formatIPToSaveFormat(IP ip){
+    // xxx.xxx.xxx.xxx/yy format
     char* finalStr = calloc(16,sizeof(char));
     strcat(finalStr, ip->ip_dec);
     strcat(finalStr, "/");
     char nbIPStr[2] = "";
     sprintf(nbIPStr, "%d", binaryMaskToNumber(ip->mask_binary));
     strcat(finalStr, nbIPStr);
-    strcat(finalStr, "\n\0");
+    strcat(finalStr, "\n");
     return finalStr;
 }
 
-int numberOfOneInMask(char* mask){
-    int cmp = 0;
-    int index = 0;
-    while(mask[index] != '0' && index < NUM_CHAR_BIN_FORMAT-4){ // str format - 3 dots - nullbyte
-        if(mask[index] != '.')
-            cmp++;
-        index++;
-    }
-    return cmp; // total - nbOfOne
-}
-
-
+/**
+ * unsigned long numberOfMachineFromBinary(char* address, char* mask)
+ * address: the address to analyse
+ * mask: the mask linked to the address
+ * return: the machine number in the network
+*/
 unsigned long numberOfMachineFromBinary(char* address, char* mask){
-    int nbOfOneInMask = numberOfOneInMask(mask);
+    int nbOfOneInMask = binaryMaskToNumber(mask);
     int nbBitInIp = NUM_CHAR_BIN_FORMAT - 4;// str format - 3 dots - nullbyte
     char machineAddressBinary[nbBitInIp - nbOfOneInMask];
     int index = nbOfOneInMask;
     int indexArray = 0;
+    //from the first 0 to the end of the mask
     while(index<=NUM_CHAR_BIN_FORMAT){
         char currentBitIP = address[index];
         if(currentBitIP != '.'){
@@ -145,15 +151,26 @@ unsigned long numberOfMachineFromBinary(char* address, char* mask){
         }
         index++;
     }
+    //Convert it into ULong
     return binaryStrToDecULong(machineAddressBinary);
 }
 
+/**
+ * unsigned long numberOfMachine(IP ip)
+ * ip: the ip object to analyse
+ * return: the machine number in the network
+*/
 unsigned long numberOfMachine(IP ip){
     return numberOfMachineFromBinary(ip->ip_binary,ip->mask_binary);
 }
 
+/**
+ * char* getBoardcast(IP ip)
+ * ip: get the broadcast address from the network of the ip Object
+*/
 char* getBoardcast(IP ip){
     char* binaryIP_copy = strdup(ip->ip_binary);
+    //Set all bits to 1 from the beginning of the host part
     for(int i=0;i<NUM_CHAR_BIN_FORMAT;i++){
         if(ip->mask_binary[i] == '0'){
             binaryIP_copy[i] = '1';
@@ -162,8 +179,14 @@ char* getBoardcast(IP ip){
     return binaryIP_copy;
 }
 
+/**
+ * int isIpPublic(IP ip)
+ * ip: the ip to analyse
+ * return: 1 if the ip is public, 0 otherwise
+*/
 int isIpPublic(IP ip){
     int isIpPublic = 0;
+    //An array of the main public ip ranges (see README.md)
     unsigned long publicRanges[][2] = {
         {16777216, 167772159}, //1.0.0.0-9.255.255.255
         {184549376, 1681915903}, //11.0.0.0-100.63.255.255
@@ -179,18 +202,24 @@ int isIpPublic(IP ip){
         {3405804032, 3758096383} //203.0.114.0-223.255.255.255
     };
     int nbRange = 12;
+    //Check if our address is in the range
     unsigned long ipDec = ipDecToNumber(ip->ip_dec);
     for(int i=0;i<nbRange;i++){
         if(ipDec>=publicRanges[i][0] && ipDec<=publicRanges[i][1])
             isIpPublic = 1;
     }
-    //Is IP 192.0.1.0/24?
+    //Is IP 192.0.1.0/24? (see README.md)
     if(strcmp(ip->ip_dec,"192.0.1.0") == 0 && strcmp(ip->mask_dec,"255.255.255.0") == 0)
         isIpPublic = 1;
 
     return isIpPublic;
 }
 
+/**
+ * type addressToType(IP ip)
+ * ip: the ip object to analyse
+ * return: the type of the address in 'type' enum representation
+*/
 type addressToType(IP ip){
     type addressType;
     unsigned long nbMachine = numberOfMachine(ip);
