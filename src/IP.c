@@ -119,6 +119,120 @@ char* formatIPToSaveFormat(IP ip){
     return finalStr;
 }
 
+int numberOfOneInMask(char* mask){
+    int cmp = 0;
+    int index = 0;
+    while(mask[index] != '0' && index < NUM_CHAR_BIN_FORMAT-4){ // str format - 3 dots - nullbyte
+        if(mask[index] != '.')
+            cmp++;
+        index++;
+    }
+    return cmp; // total - nbOfOne
+}
+
+
+unsigned long numberOfMachineFromBinary(char* address, char* mask){
+    int nbOfOneInMask = numberOfOneInMask(mask);
+    int nbBitInIp = NUM_CHAR_BIN_FORMAT - 4;// str format - 3 dots - nullbyte
+    char machineAddressBinary[nbBitInIp - nbOfOneInMask];
+    int index = nbOfOneInMask;
+    int indexArray = 0;
+    while(index<=NUM_CHAR_BIN_FORMAT){
+        char currentBitIP = address[index];
+        if(currentBitIP != '.'){
+            machineAddressBinary[indexArray] = currentBitIP;
+            indexArray++;
+        }
+        index++;
+    }
+    return binaryStrToDecULong(machineAddressBinary);
+}
+
+unsigned long numberOfMachine(IP ip){
+    return numberOfMachineFromBinary(ip->ip_binary,ip->mask_binary);
+}
+
+char* getBoardcast(IP ip){
+    char* binaryIP_copy = strdup(ip->ip_binary);
+    for(int i=0;i<NUM_CHAR_BIN_FORMAT;i++){
+        if(ip->mask_binary[i] == '0'){
+            binaryIP_copy[i] = '1';
+        }
+    }
+    return binaryIP_copy;
+}
+
+int isIpPublic(IP ip){
+    int isIpPublic = 0;
+    unsigned long publicRanges[][2] = {
+        {16777216, 167772159}, //1.0.0.0-9.255.255.255
+        {184549376, 1681915903}, //11.0.0.0-100.63.255.255
+        {1686110208, 2130706431}, //100.128.0.0-126.255.255.255
+        {2147483648, 2851995647}, //128.0.0.0-169.253.255.255
+        {2852061184, 2886729727}, //169.255.0.0-172.15.255.255
+        {2887778304, 3221225471}, //172.32.0.0-191.255.255.255
+        {3221226240, 3227017983}, //192.0.3.0-192.88.98.255
+        {3227018240, 3232235519}, //192.88.100.0-192.167.255.255
+        {3232301056, 3323068415}, //192.169.0.0-198.17.255.255
+        {3323199488, 3325256703}, //198.20.0.0-198.51.99.255
+        {3325256960, 3405803775}, //198.51.101.0-203.0.112.255
+        {3405804032, 3758096383} //203.0.114.0-223.255.255.255
+    };
+    int nbRange = 12;
+    unsigned long ipDec = ipDecToNumber(ip->ip_dec);
+    for(int i=0;i<nbRange;i++){
+        if(ipDec>=publicRanges[i][0] && ipDec<=publicRanges[i][1])
+            isIpPublic = 1;
+    }
+    //Is IP 192.0.1.0/24?
+    if(strcmp(ip->ip_dec,"192.0.1.0") == 0 && strcmp(ip->mask_dec,"255.255.255.0") == 0)
+        isIpPublic = 1;
+
+    return isIpPublic;
+}
+
+type addressToType(IP ip){
+    type addressType;
+    unsigned long nbMachine = numberOfMachine(ip);
+    long boardcastNumber = numberOfMachineFromBinary(getBoardcast(ip),ip->mask_binary);
+    if(nbMachine == 0)
+        addressType = NETWORK;
+    else if(nbMachine == boardcastNumber)
+        addressType = BROADCAST;
+    else if(isIpPublic(ip))
+        addressType = PUBLIC;
+    else
+        addressType = PRIVATE;
+    return addressType;
+}
+
+/**
+ * unsigned long ipDecToNumber(char* ip)
+ * ip: the ip to convert
+ * return: the decimal representation of the ip as an unsigned long
+*/
+unsigned long ipDecToNumber(char* ip){
+    //The final number
+    unsigned long finalNumber = 0;
+    //Copy the ip to don't destruct it with strtok
+    char* ip_cpy = strdup(ip);
+    char* token = strtok(ip_cpy,DELIMITER_IP);
+    //The main goal of this code is to perform (www * 256^3 + xxx * 256^2 + yyy * 256^1 + zzz) = ip address as number
+    int power = 3;
+    while(token != NULL){
+        unsigned long ip_part = atoi(token);
+        unsigned long powerCalc = 1;
+        for(int i=0;i<power;i++)
+            powerCalc *= 256;
+        ip_part *= powerCalc;
+        finalNumber+=ip_part;
+        token = strtok(NULL,DELIMITER_IP);
+        power--;
+    }
+    free(ip_cpy);
+    return finalNumber;
+}
+
 /**
  * IP ipObjAllocation()
  * return: IP object well allocated, except ip_dec field which is allocated just after by strdup
@@ -159,12 +273,20 @@ IP getIPObject(char* ip){
     ipObj->ip_dec = strdup(token);
     //Get mask
     token = strtok(NULL,DELIMITER_MSK);
+    if(token == NULL){
+        free(ip_copy);
+        freeIpObject(ipObj);
+        fprintf(stderr,"Bad IP\n");
+        exit(EXIT_FAILURE);
+    }
     char* mask_tok = strdup(token);
 
     //Quit if mask too large
     if(atoi(mask_tok)>32){
+        free(ip_copy);
+        freeIpObject(ipObj);
         free(mask_tok);
-        printf("Bad mask\n");
+        fprintf(stderr,"Bad mask\n");
         exit(EXIT_FAILURE);
     }
 
@@ -179,8 +301,9 @@ IP getIPObject(char* ip){
     convertAndFormatAdress(ipObj->mask_binary,ipObj->mask_dec,ipObj->mask_hex,binaryStrToDecStr,binaryStrToHexStr);
 
     //Stubs
-    ipObj->type = PUBLIC;
+    ipObj->type = addressToType(ipObj);
 
+    free(ip_copy);
     return ipObj;
 }
 

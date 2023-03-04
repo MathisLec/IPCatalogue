@@ -81,6 +81,7 @@ IP* addIpMenu(IP* ips){
     char* buff = calloc(20, sizeof(char));
     printf("Votre IP à ajouter (Ex:192.168.0.1/24):\n");
     //Get the user entry
+    printf(">");
     scanf("%s",buff);
     //Get the new IP array
     ips = addIPInArray(ips,buff);
@@ -107,6 +108,7 @@ void filterIpMenu(IP* ips){
     if(ips != NULL){
         printf("Votre masque pour filtrer les IP(Ex:24):\n");
         int mask;
+        printf(">");
         scanf("%d",&mask);
         ipFilter(ips, mask);
     }
@@ -129,7 +131,7 @@ void printMenu(IP* IPs){
         }
         for(int i=0;i<nbIPInArray;i++){
             IP current = arrayToPrint[i];
-            printf("|%s\t|%s   \t|%s / %s\t|%s / %s\t|%s\t\t|\n",current->ip_dec,
+            printf("|%s\t|%s   \t|%s / %s\t|%s / %s\t|%s  \t|\n",current->ip_dec,
                                                     current->mask_dec,
                                                     current->ip_binary,
                                                     current->mask_binary,
@@ -154,6 +156,7 @@ int main(){
         //Print menu in console
         printMenu(IPs);
         //Get user choice
+        printf(">");
         scanf("%d",&choice);
 
         switch(choice){

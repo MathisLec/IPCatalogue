@@ -6,6 +6,8 @@
 
 char* binaryStrToDecStr(char* bin);
 
+unsigned long binaryStrToDecULong(char* bin);
+
 char* binaryStrToHexStr(char* bin);
 
 char* decimalIntToBinaryStr(int num);

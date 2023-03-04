@@ -30,4 +30,8 @@ char* formatIPToSaveFormat(IP ip);
 
 char* numberIntToBinaryMask(int mask);
 
+unsigned long ipDecToNumber(char* ip);
+
+unsigned long numberOfMachine(IP ip);
+
 #endif

@@ -64,6 +64,10 @@ char* binaryStrToDecStr(char* bin){
     return strDec;
 }
 
+unsigned long binaryStrToDecULong(char* bin){
+    return strtoul(bin,NULL,2);
+}
+
 /**
  * char* binaryStrToHexStr(char* bin)
  * bin: binary string representation to convert
