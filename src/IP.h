@@ -28,4 +28,6 @@ char* getStrType(type t);
 
 char* formatIPToSaveFormat(IP ip);
 
+char* numberIntToBinaryMask(int mask);
+
 #endif

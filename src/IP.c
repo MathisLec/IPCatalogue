@@ -4,6 +4,9 @@
 const char* DELIMITER_IP = ".";
 const char* DELIMITER_MSK = "/";
 char* TYPE_STR[5] = {"PUBLIC", "PRIVATE", "LOOPBACK", "NETWORK", "BROADCAST"};
+int NUM_CHAR_DEC_FORMAT = 16; // 16 = 3 bits * 4 + 3 dots + nullbyte
+int NUM_CHAR_BIN_FORMAT = 36; // 36 = 8 bits * 4 + 3 dots + nullbyte
+int NUM_CHAR_HEX_FORMAT = 12; // 12 = 2 bits * 4 + 3 dots + nullbyte
 
 /**
  * numberToBinaryMask(char* maskNumber,char* mask_binary)
@@ -11,9 +14,8 @@ char* TYPE_STR[5] = {"PUBLIC", "PRIVATE", "LOOPBACK", "NETWORK", "BROADCAST"};
  * mask_binary: receive binary representation in string format
 */
 void numberToBinaryMask(char* maskNumber,char* mask_binary){
-    int numCharBinaryMask = 36;
     int number = atoi(maskNumber);
-    for(int i=1;i<numCharBinaryMask;i++){
+    for(int i=1;i<NUM_CHAR_BIN_FORMAT;i++){
         if(i%9==0){
             strcat(mask_binary, DELIMITER_IP);
         }
@@ -22,6 +24,19 @@ void numberToBinaryMask(char* maskNumber,char* mask_binary){
             number--;
         }
     }
+}
+
+/**
+ * numberIntToBinaryMask(int mask)
+ * mask: mask number
+ * return: the string representation of the mask in binary format
+*/
+char* numberIntToBinaryMask(int mask){
+    char maskNbStr[2] = "";
+    sprintf(maskNbStr, "%d", mask);
+    char* binMask = calloc(NUM_CHAR_BIN_FORMAT,sizeof(char));
+    numberToBinaryMask(maskNbStr,binMask);
+    return binMask;
 }
 
 int binaryMaskToNumber(char* binaryMask){
@@ -112,22 +127,19 @@ IP ipObjAllocation(){
     IP ipObj = malloc(sizeof(struct IP));
     //Field allocation
     //Decimal IP
-    int numCharDecFormat = 16; // 16 = 3 bits * 4 + 3 dots + nullbyte
     //decimal IP allocated by strdup
     //Decimal Mask
-    ipObj->mask_dec = calloc(numCharDecFormat, sizeof(char));
+    ipObj->mask_dec = calloc(NUM_CHAR_DEC_FORMAT, sizeof(char));
 
     //Binary IP
-    int numCharBinFormat = 36; // 36 = 8 bits * 4 + 3 dots + nullbyte
-    ipObj->ip_binary = calloc(numCharBinFormat, sizeof(char));
+    ipObj->ip_binary = calloc(NUM_CHAR_BIN_FORMAT, sizeof(char));
     //Binary Mask
-    ipObj->mask_binary = calloc(numCharBinFormat, sizeof(char));
+    ipObj->mask_binary = calloc(NUM_CHAR_BIN_FORMAT, sizeof(char));
 
     //Hexa IP
-    int numCharHexFormat = 12; // 12 = 2 bits * 4 + 3 dots + nullbyte
-    ipObj->ip_hex = calloc(numCharHexFormat, sizeof(char));
+    ipObj->ip_hex = calloc(NUM_CHAR_HEX_FORMAT, sizeof(char));
     //Hexa Mask
-    ipObj->mask_hex = calloc(numCharHexFormat, sizeof(char));
+    ipObj->mask_hex = calloc(NUM_CHAR_HEX_FORMAT, sizeof(char));
     return ipObj;
 }
 
