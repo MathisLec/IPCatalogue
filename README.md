@@ -26,7 +26,7 @@ To use it, please launch install.sh script, then:
 ```
 ./ip_catalog
 ```
-You can choose among 3 options:
+You can choose among 4 options:
 1. Rentrer une IP: add an IP in the catalog. The typo is for example: 192.168.0.1/24
 2. Filtrer les IP par masque: show you only IP that match with the mask you specified.
 3. Sauvegarder: save the current catalog in the save file. To use when the user filter the ip list.
