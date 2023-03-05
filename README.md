@@ -29,7 +29,8 @@ To use it, please launch install.sh script, then:
 You can choose among 3 options:
 1. Rentrer une IP: add an IP in the catalog. The typo is for example: 192.168.0.1/24
 2. Filtrer les IP par masque: show you only IP that match with the mask you specified.
-3. Quitter: Quit the application. Please, use this option instead of Ctrl-C to keep your memory.
+3. Sauvegarder: save the current catalog in the save file. To use when the user filter the ip list.
+4. Quitter: Quit the application. Please, use this option instead of Ctrl-C to keep your memory.
 
 You can just type the number of the option in the prompt and press enter.
 
